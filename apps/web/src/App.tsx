@@ -12,7 +12,6 @@ import { AppPage } from './pages/AppPage';
 const RootRedirect = () => {
   const { isAuthenticated, isLoading } = useAuth();
 
-  // Show loading state while checking authentication
   if (isLoading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
@@ -21,9 +20,7 @@ const RootRedirect = () => {
     );
   }
 
-  // After loading completes, redirect based on auth status
-  // Using key prop to force re-render when auth state changes
-  return <Navigate to={isAuthenticated ? '/app' : '/signin'} replace key={isAuthenticated ? 'auth' : 'no-auth'} />;
+  return <Navigate to={isAuthenticated ? '/app' : '/signin'} replace />;
 };
 
 function App() {

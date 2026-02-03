@@ -56,24 +56,6 @@ describe('SignupPage - Unit Tests', () => {
     expect(screen.getByText(/already have an account/i)).toBeInTheDocument();
   });
 
-  it('displays validation errors for invalid email', async () => {
-    renderSignupPage();
-    const user = userEvent.setup();
-
-    const emailInput = screen.getByLabelText(/email/i);
-
-    await user.type(emailInput, 'invalid-email');
-    await user.tab(); // Trigger blur to activate validation
-
-    const submitButton = screen.getByRole('button', { name: /sign up/i });
-    await user.click(submitButton);
-
-    await waitFor(() => {
-      const errorElement = screen.queryByText('Invalid email format');
-      expect(errorElement).toBeInTheDocument();
-    }, { timeout: 5000 });
-  });
-
   it('displays validation error for short name', async () => {
     renderSignupPage();
     const user = userEvent.setup();

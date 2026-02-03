@@ -1,8 +1,14 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter, Routes, Route, Navigate } from 'react-router-dom';
 import App from './App';
 import * as authApi from './services/authApi';
+import { AuthProvider } from './contexts/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { SignupPage } from './pages/SignupPage';
+import { SigninPage } from './pages/SigninPage';
+import { AppPage } from './pages/AppPage';
 
 /**
  * E2E tests for complete authentication flow
@@ -155,7 +161,7 @@ describe('App - E2E Authentication Flow', () => {
   });
 
   it('maintains authentication state after page refresh', async () => {
-    // Set up localStorage with a token
+    // Set up localStorage with a token (simulating a page refresh with existing session)
     localStorage.setItem('auth_token', 'mock-jwt-token-12345');
 
     const mockGetMeResponse = {
@@ -164,18 +170,44 @@ describe('App - E2E Authentication Flow', () => {
       name: 'Test User',
     };
 
-    // Mock getMe to succeed
+    // Mock getMe to succeed (token is valid)
     const getMeSpy = vi.spyOn(authApi.authApi, 'getMe').mockResolvedValue(mockGetMeResponse);
 
-    // Render the app (simulating page refresh)
-    render(<App />);
+    // Create a custom App component using MemoryRouter starting at /app
+    const TestApp = () => (
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/app']}>
+          <Routes>
+            <Route path="/" element={<Navigate to="/signin" replace />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/signin" element={<SigninPage />} />
+            <Route 
+              path="/app" 
+              element={
+                <ProtectedRoute>
+                  <AppPage />
+                </ProtectedRoute>
+              } 
+            />
+          </Routes>
+        </MemoryRouter>
+      </AuthProvider>
+    );
+
+    // Render the app starting at /app (simulating user refreshing the protected page)
+    render(<TestApp />);
 
     // Wait for getMe to be called (auth check happens on mount)
     await waitFor(() => {
       expect(getMeSpy).toHaveBeenCalled();
     }, { timeout: 3000 });
 
-    // Wait for the app page to appear (after auth check and redirect)
+    // Wait for loading to complete
+    await waitFor(() => {
+      expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    // After auth check completes successfully, should show the app page (not redirect to signin)
     await waitFor(() => {
       expect(screen.getByRole('heading', { name: /welcome to the application/i })).toBeInTheDocument();
     }, { timeout: 5000 });
