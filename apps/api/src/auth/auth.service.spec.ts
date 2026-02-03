@@ -2,13 +2,24 @@ import * as fc from 'fast-check';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { getModelToken } from '@nestjs/mongoose';
 import { AuthService } from './auth.service';
 
 describe('Auth Service - Property Tests', () => {
   let authService: AuthService;
   let jwtService: JwtService;
+  let mockUserModel: any;
 
   beforeEach(async () => {
+    // Mock User Model
+    mockUserModel = jest.fn().mockImplementation((userData: any) => ({
+      ...userData,
+      _id: '507f1f77bcf86cd799439011',
+      save: jest.fn(),
+    }));
+    mockUserModel.findOne = jest.fn();
+    mockUserModel.findById = jest.fn();
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         JwtModule.register({
@@ -27,6 +38,10 @@ describe('Auth Service - Property Tests', () => {
               return null;
             }),
           },
+        },
+        {
+          provide: getModelToken('User'),
+          useValue: mockUserModel,
         },
       ],
     }).compile();
