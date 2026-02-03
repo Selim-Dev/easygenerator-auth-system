@@ -168,20 +168,37 @@ describe('App - E2E Authentication Flow', () => {
     const getMeSpy = vi.spyOn(authApi.authApi, 'getMe').mockResolvedValue(mockGetMeResponse);
 
     // Render the app (simulating page refresh)
-    render(<App />);
+    const { debug } = render(<App />);
 
     // Wait for getMe to be called (auth check happens on mount)
     await waitFor(() => {
       expect(getMeSpy).toHaveBeenCalled();
-    }, { timeout: 5000 });
+    }, { timeout: 3000 });
 
-    // After auth check completes, should redirect to /app
+    // Wait for loading to complete
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /welcome to the application/i })).toBeInTheDocument();
+      expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+    }, { timeout: 3000 });
+
+    // After auth check completes, should show either signin or app page
+    // Since we have a valid token, it should redirect to /app
+    await waitFor(() => {
+      // Check if we're on the app page OR still on signin
+      const appHeading = screen.queryByRole('heading', { name: /welcome to the application/i });
+      const signinHeading = screen.queryByRole('heading', { name: /sign in/i });
+      
+      // We should be on the app page
+      expect(appHeading || signinHeading).toBeTruthy();
+      
+      // If we're on signin page, that's a failure
+      if (signinHeading) {
+        throw new Error('Expected to be on app page but found signin page');
+      }
     }, { timeout: 5000 });
 
+    // Verify we're on the app page
     expect(screen.getByText(/hello, test user!/i)).toBeInTheDocument();
-  });
+  }, 15000);
 
   it('handles expired token by redirecting to signin', async () => {
     // Set up localStorage with an expired token

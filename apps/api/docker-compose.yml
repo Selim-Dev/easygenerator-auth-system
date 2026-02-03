@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  api:
+    # Placeholder for ECR image - replace with your ECR repository URI
+    image: <AWS_ACCOUNT_ID>.dkr.ecr.<AWS_REGION>.amazonaws.com/easygenerator-api:latest
+    container_name: easygenerator-api
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
