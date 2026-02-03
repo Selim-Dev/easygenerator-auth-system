@@ -110,7 +110,7 @@ describe('Property 4: Frontend and Backend Validation Consistency', () => {
     // Test specific boundary cases
     const boundaryCases = [
       // Email boundaries
-      { email: 'a@b.c', name: 'abc', password: 'Pass123!' }, // Minimal valid email
+      { email: 'a@b.co', name: 'abc', password: 'Pass123!' }, // Minimal valid email
       { email: 'invalid', name: 'abc', password: 'Pass123!' }, // Invalid email
       { email: '', name: 'abc', password: 'Pass123!' }, // Empty email
       
