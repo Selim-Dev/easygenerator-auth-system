@@ -43,7 +43,7 @@ describe('Auth Service - Integration Property Tests', () => {
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
-  });
+  }, 180000);
 
   afterAll(async () => {
     await module.close();

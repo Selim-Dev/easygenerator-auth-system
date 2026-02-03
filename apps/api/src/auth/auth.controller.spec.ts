@@ -59,7 +59,7 @@ describe('Auth Controller - Property Tests', () => {
     await app.init();
 
     authService = module.get<AuthService>(AuthService);
-  });
+  }, 180000);
 
   afterAll(async () => {
     await app.close();

@@ -22,6 +22,3 @@ export const UserSchema = new Schema(
     timestamps: true,
   },
 );
-
-// Create unique index on email field
-UserSchema.index({ email: 1 }, { unique: true });

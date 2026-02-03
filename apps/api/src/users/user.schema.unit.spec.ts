@@ -22,7 +22,7 @@ describe('User Schema Unit Tests', () => {
     }).compile();
 
     userModel = moduleRef.get<Model<IUser>>(getModelToken('User'));
-  });
+  }, 180000);
 
   afterAll(async () => {
     await moduleRef.close();

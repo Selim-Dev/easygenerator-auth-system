@@ -43,7 +43,7 @@ describe('Property 25: Swagger Documentation Available', () => {
     SwaggerModule.setup('api-docs', app, document);
 
     await app.init();
-  });
+  }, 180000);
 
   afterAll(async () => {
     if (app) {

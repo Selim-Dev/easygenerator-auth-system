@@ -55,7 +55,7 @@ describe('App - E2E Authentication Flow', () => {
 
     // Step 1: Navigate to signup page
     // App should start at root and redirect to /signin (not authenticated)
-    expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
 
     // Click on "Sign up" link
     const signupLink = screen.getByText(/sign up/i);
@@ -63,7 +63,7 @@ describe('App - E2E Authentication Flow', () => {
 
     // Step 2: Fill and submit signup form
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /sign up/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /create account/i })).toBeInTheDocument();
     });
 
     const emailInput = screen.getByLabelText(/email/i);
@@ -88,7 +88,7 @@ describe('App - E2E Authentication Flow', () => {
 
     // Step 3: After successful signup, user is redirected to signin page
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
     });
 
     // Step 4: Fill and submit signin form
@@ -131,7 +131,7 @@ describe('App - E2E Authentication Flow', () => {
 
     // Step 7: After logout, user is redirected to signin page
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
     });
 
     // Verify token was removed from localStorage
@@ -151,7 +151,7 @@ describe('App - E2E Authentication Flow', () => {
     });
 
     // Should be redirected to signin page
-    expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
   });
 
   it('maintains authentication state after page refresh', async () => {
@@ -168,35 +168,19 @@ describe('App - E2E Authentication Flow', () => {
     const getMeSpy = vi.spyOn(authApi.authApi, 'getMe').mockResolvedValue(mockGetMeResponse);
 
     // Render the app (simulating page refresh)
-    const { debug } = render(<App />);
+    render(<App />);
 
     // Wait for getMe to be called (auth check happens on mount)
     await waitFor(() => {
       expect(getMeSpy).toHaveBeenCalled();
     }, { timeout: 3000 });
 
-    // Wait for loading to complete
+    // Wait for the app page to appear (after auth check and redirect)
     await waitFor(() => {
-      expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
-    }, { timeout: 3000 });
-
-    // After auth check completes, should show either signin or app page
-    // Since we have a valid token, it should redirect to /app
-    await waitFor(() => {
-      // Check if we're on the app page OR still on signin
-      const appHeading = screen.queryByRole('heading', { name: /welcome to the application/i });
-      const signinHeading = screen.queryByRole('heading', { name: /sign in/i });
-      
-      // We should be on the app page
-      expect(appHeading || signinHeading).toBeTruthy();
-      
-      // If we're on signin page, that's a failure
-      if (signinHeading) {
-        throw new Error('Expected to be on app page but found signin page');
-      }
+      expect(screen.getByRole('heading', { name: /welcome to the application/i })).toBeInTheDocument();
     }, { timeout: 5000 });
 
-    // Verify we're on the app page
+    // Verify we're on the app page with user data
     expect(screen.getByText(/hello, test user!/i)).toBeInTheDocument();
   }, 15000);
 
@@ -219,7 +203,7 @@ describe('App - E2E Authentication Flow', () => {
 
     // Should be redirected to signin page
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
     });
 
     // Token should be removed from localStorage
@@ -241,14 +225,14 @@ describe('App - E2E Authentication Flow', () => {
     });
 
     // Should start at signin page
-    expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
 
     // Navigate to signup
     const signupLink = screen.getByText(/sign up/i);
     await user.click(signupLink);
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /sign up/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /create account/i })).toBeInTheDocument();
     });
 
     // Navigate back to signin
@@ -256,7 +240,7 @@ describe('App - E2E Authentication Flow', () => {
     await user.click(signinLink);
 
     await waitFor(() => {
-      expect(screen.getByRole('heading', { name: /sign in/i })).toBeInTheDocument();
+      expect(screen.getByRole('heading', { name: /welcome back/i })).toBeInTheDocument();
     });
   });
 });

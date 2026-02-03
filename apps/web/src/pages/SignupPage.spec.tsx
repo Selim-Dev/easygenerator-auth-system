@@ -48,7 +48,7 @@ describe('SignupPage - Unit Tests', () => {
   it('renders signup form correctly', () => {
     renderSignupPage();
 
-    expect(screen.getByRole('heading', { name: /sign up/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /create account/i })).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
@@ -219,7 +219,7 @@ describe('SignupPage - Unit Tests', () => {
     expect(nameInput.disabled).toBe(true);
     expect(passwordInput.disabled).toBe(true);
     expect(submitButton.disabled).toBe(true);
-    expect(screen.getByText(/signing up.../i)).toBeInTheDocument();
+    expect(screen.getByText(/creating account.../i)).toBeInTheDocument();
 
     await waitFor(() => {
       expect(mockSignup).toHaveBeenCalled();
