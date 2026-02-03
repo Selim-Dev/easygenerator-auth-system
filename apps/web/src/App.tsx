@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { SignupPage } from './pages/SignupPage';
+import { SigninPage } from './pages/SigninPage';
 
 function App() {
   return (
@@ -8,8 +10,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Navigate to="/signin" replace />} />
-          <Route path="/signup" element={<div>Signup Page</div>} />
-          <Route path="/signin" element={<div>Signin Page</div>} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/signin" element={<SigninPage />} />
           <Route 
             path="/app" 
             element={
